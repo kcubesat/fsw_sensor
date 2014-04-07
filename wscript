@@ -25,10 +25,10 @@ def configure(ctx):
 
 
 	ctx.env.append_unique('FILES_FSW_SENSOR' , ['src/*.c'])
-	ctx.write_config_header('include/conf_storage.h', top=True, remove=True)
+	ctx.write_config_header('inc/conf_storage.h', top=True, remove=True)
 	
 def build(ctx):
-	ctx(export_includes='include', name='fsw_sensor_include')
+	ctx(export_includes='inc', name='fsw_sensor_inc')
 	if ctx.env.FILES_FSW_SENSOR:
 
 		install_path = False
@@ -40,9 +40,9 @@ def build(ctx):
 
 		ctx.stlib(source=ctx.path.ant_glob(ctx.env.FILES_FSW_SENSOR, excl=ctx.env.EXCLUDES_FSW_SENSOR), 
 			target='fsw_sensor',
-			includes = 'include',
+			includes = 'inc',
 			defines = ctx.env.DEFINES_FSW_SENSOR,
-			export_includes='include',
+			export_includes='inc',
 			use='csp gomspace storage include',
 			install_path = install_path,
 		)
