@@ -1,0 +1,6 @@
+
+------------------------------------------------
+Refactor DIR to FATDIR in order to avoid name conflict with VFS
+Change include directory paths
+ffconf.h contains changes	
+------------------------------------------------
