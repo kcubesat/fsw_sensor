@@ -18,7 +18,19 @@
 #include <fat_sd/ffconf.h>
 #include "diskio.h"
 
+spi_dev_t spi_dev;
+static spi_chip_t temp_sensor_chip[temp_MAP_SIZE];
 static spi_chip_t *sd_chip;  // Pointer to SPI structuer 
+static unsigned int baudrate; // The baudrate to run at full speed
+
+//* vTaskInit(void * pvParmeters) *//
+/* setup th SPI0 hardware */
+spi_dev.variable_ps = 0;  // Set CS once, not for each read/write operation
+spi_dev.pcs_decode = 1;   // Use chip select mux
+spi_dev.index = 0;        // Use SPI0
+spi_init_dev(&spi_dev);   // change  'dev-arm/spi/spi.c'
+
+/* #ifdef ENABLE_SD */
 
 static spi_chip_t spi_dummy_chip;
 spi_dummy_chip.cs = 0;
@@ -42,11 +54,18 @@ spi_sd_chip.cs = CONFIG_SD_CS;      // The SD card is on chip-select 0
 spi_sd_chip.reg = CONFIG_SD_CS  / 4;// The SD card in on cd register 0
 spi_sd_chip.spck_dealy = 0;         // No delays
 spi_sd_chip.trans_delay = 0;        // No delays
-spi_setup_chip(&spi_sd_chip);
+spi_setup_chip(&spi_sd_chip);       // change  'dev-arm/spi/spi.c'
 
-	
+vTaskDelay(100);
+result = sd_spi_init(&spi_sd_chip);  // change 'libfsw_sensor/src/sd_spi.c'
 
-		
+if (result == 0) {
+	result = f_mount(0, &fs0);
+	printf("temp sensor detected, mount result %d\r\n", result);
+} else {
+	printf("temp sensor not found\r\n");
+}
+
 
 static inline void xmit_spi(BYTE dat) {
 	spi_write(sd_chip, dat);
@@ -72,4 +91,6 @@ char sd_spi_init(spi_chip_t * chip) {
 #endif
 	return sd_disk_initialize();
 }
+	
+
 */
