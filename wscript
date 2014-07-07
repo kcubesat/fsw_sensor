@@ -43,7 +43,7 @@ def build(ctx):
 			includes = 'include',
 			defines = ctx.env.DEFINES_FSW_SENSOR,
 			export_includes='include',
-			use='csp gomspace include',
+			use='csp gomspace storage include',
 			install_path = install_path,
 		)
 
