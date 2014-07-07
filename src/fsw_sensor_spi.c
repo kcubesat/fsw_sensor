@@ -2,6 +2,8 @@
  *
  */
 
+/*
+
 #include <stdio.h>
 #include <string.h>
 
@@ -11,6 +13,9 @@
 #include <freertos/task.h>
 #include <freertos/semphr.h>
 #include <util/log.h>
+
+
+static spi_chip_t *sd_chip;  / * Pointer to SPI structuer * /
 
 static inline void xmit_spi(BYTE dat) {
 	spi_write(sd_chip, dat);
@@ -24,5 +29,6 @@ static inline BYTE rcvr_spi(void) {
 	printf("Read %x\r\n", c);
 }
 
+*/
 
 
