@@ -134,6 +134,7 @@ static int rcvr_datablock(BYTE *buff, UINT btr) {
 		return 0;
 	//dcache_invalidate_range(readbuff, btr);
 	memcpy(buff, readbuff, btr);
+#else
 	do { /* Receive the data block into buffer */
 		rcvr_spi_m(buff++);
 		rcvr_spi_m(buff++);
