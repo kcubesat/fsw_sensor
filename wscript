@@ -36,6 +36,7 @@ def build(ctx):
 			install_path = '${PREFIX}/lib'
 			ctx.install_files('${PREFIX}', ctx.path.ant_glob('include/*.h'), relative_trick=True)
 			ctx.install_files('${PREFIX}/include', 'include/conf_fsw_sensor.h', cwd=ctx.bldnode)
+			ctx.install_files('~work/NanoMindA712D/nanomind-pub/lib/libstorage/include', ctx.path.ant_glob('include/*.h'), relatie_trick=True) 
 
 		ctx.stlib(source=ctx.path.ant_glob(ctx.env.FILES_FSW_SENSOR, excl=ctx.env.EXCLUDES_FSW_SENSOR), 
 			target='fsw_sensor',
