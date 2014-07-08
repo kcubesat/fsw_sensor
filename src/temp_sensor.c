@@ -1,6 +1,6 @@
 #include <inttypes.h>
 #include <stdio.h>
-#include <stdini.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <dev/spi.h>
@@ -10,7 +10,7 @@
 #include <freertos/queue.h>
 
 /* reference lm70 */
-void temp_sensor_spi_setup_cs(spi_devt * spi_dev, spi_chip_t * spi_chip, uint8_t cs) {
+void temp_sensor_spi_setup_cs(spi_dev_t * spi_dev, spi_chip_t * spi_chip, uint8_t cs) {
 	spi_chip->spi_dev = spi_dev;	//A pointer to the physical device SPI0
 	spi_chip->baudrate = 1000000;	//This is only the initial baud rate, it will be increased by the driver
 	spi_chip->spi_mode = 3;		// SPI mode
@@ -20,7 +20,7 @@ void temp_sensor_spi_setup_cs(spi_devt * spi_dev, spi_chip_t * spi_chip, uint8_t
 	spi_chip->stay_act = 0;		// Should the chip-select stay active until next SPI transmission? //reference lm70
 	spi_chip->spck_delay = 4;	// Delay
 	spi_chip->trans_delay = 60;	// Delay
-	spi_seup_chip(spi_chip);
+	spi_setup_chip(spi_chip);
 }
 
 float temp_sensor_read_temp(spi_chip_t * chip) {
