@@ -25,7 +25,7 @@ void temp_sensor_spi_setup_cs(spi_dev_t * spi_dev, spi_chip_t * spi_chip, uint8_
 
 float temp_sensor_read_temp(spi_chip_t * chip) {
 	if (spi_lock_dev(chip->spi_dev) < 0)
-		returen 0;
+		return 0;
 	spi_write(chip, 0x0000);
 	int16_t temp = spi_read(chip);
 	spi_unlock_dev(chip->spi_dev);
