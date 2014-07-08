@@ -2,8 +2,9 @@
  *
  */
 
-
+#include <inttypes.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <dev/spi.h>
@@ -12,18 +13,77 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <freertos/semphr.h>
+#include <freertos/queue.h>
 #include <util/log.h>
 
 #include <fat_sd/integer.h>
 #include <fat_sd/ffconf.h>
 #include "diskio.h"
 
-spi_dev_t spi_dev;
-static spi_chip_t temp_sensor_chip[temp_MAP_SIZE];
+
+
+
+extern spi_dev_t spi_dev;
+
+static int temp_sensor_map = {0};	// chip CS
+static spi_chip_t temp_sensor_chip;
+
+temp_sensor_spi_setup_cs(&spi_dev, &temp_sensor_chip, temp_sensor_map);
+temp_sensor_read_temp(chip);
+temp_sensor_read_raw(chip);
+
+///////////////////////////////////
+
+/* test (reference cmd_panels.c */
+
+int cmd_temp_sensor_test(struct command_context *ctx) {
+
+	while(1) {
+		if (usart_messages_waiting(USART_CONSOLE) != 0)
+			break;
+
+		printf("Temp %f\r\n", temp_sensor_read_temp(&temp_sensor_chip));
+		vTaskDelay(100);
+	}
+	return CMD_ERROR_NONE;
+}
+
 static spi_chip_t *sd_chip;  // Pointer to SPI structuer 
 static unsigned int baudrate; // The baudrate to run at full speed
 
 //* vTaskInit(void * pvParmeters) *//
+/* setup spi cs (reference gyro) */
+void temp_sensor_spi_setup_cs(spi_devt * spi_dev, spi_chip_t * spi_chip, uint8_t cs) {
+	spi_chip->spi_dev = spi_dev;	//A pointer to the physical device SPI0
+	spi_chip->baudrate = 1000000;	//This is only the initial baud rate, it will be increased by the driver
+	spi_chip->spi_mode = 3;		// SPI mode
+	spi_chip->bits = 16;		// Default value for transferring bytes
+	spi_chip->cs = cs; 		// The chip select number
+	spi_chip->reg = cs/4;		// The chip select register, The register bank to use
+	spi_chip->stay_act = 0;		// Should the chip-select stay active until next SPI transmission? //reference lm70
+	spi_chip->spck_delay = 4;	// Delay
+	spi_chip->trans_delay = 60;	// Delay
+	spi_seup_chip(spi_chip);
+}
+/* reference lm70 */
+float temp_sensor_read_temp(spi_chip_t * chip) {
+	if (spi_lock_dev(chip->spi_dev) < 0)
+		returen 0;
+	spi_write(chip, 0x0000);
+	int16_t temp = spi_read(chip);
+	spi_unlock_dev(chip->spi_dev);
+	return (((double)(temp >>5)) / 4.0);
+}
+
+int16_t temp_sensor_read_raw(spi_chip_t * chip) {
+	if (spi_lock_dev(chip->spi_dev) < 0)
+		return 0;
+	spi_write(chip, 0x0000);
+	spi_unlock_dev(chip->spi_dev);
+	return spi_read(chip);
+}
+
+
 /* setup th SPI0 hardware */
 spi_dev.variable_ps = 0;  // Set CS once, not for each read/write operation
 spi_dev.pcs_decode = 1;   // Use chip select mux
@@ -92,5 +152,4 @@ char sd_spi_init(spi_chip_t * chip) {
 	return sd_disk_initialize();
 }
 	
-
 */
