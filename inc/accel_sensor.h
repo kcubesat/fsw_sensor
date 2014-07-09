@@ -18,7 +18,7 @@ void accel_sensor_spi_setup_cs(spi_dev_t * spi_dev, spi_chip_t * spi_chip, uint8
  * @param chip
  * @return temperature in deg. C
  */
-float accel_sensor_read_temp(spi_chip_t * chip);
+float accel_sensor_read_accel(spi_chip_t * chip);
 
 /**
  * Get ACCEL_SENSOR temperature in RAW
