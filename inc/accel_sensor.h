@@ -1,7 +1,15 @@
 #ifndef ACCEL_SENSOR_H_
 #define ACCEL_SENSOR_H_
+#include <stdint.h>
 
 #include <dev/spi.h>
+
+/** Parameters describing **/
+
+typedef struct{
+	int low;
+	int high;
+} x_val_t;
 
 /**
  * Helper function to setup a spi_chip_t.
