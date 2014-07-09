@@ -29,6 +29,7 @@
 
 
 /* reference gyro */
+/*
 static void accel_sensor_write_reg(spi_chip_t * chip, uint8_t reg_base, uint16_t value) {
 	if (spi_lock_dev(chip->spi_dev) < 0)
 		return;
@@ -54,7 +55,8 @@ static uint16_t accel_read_reg(spi_chip_t * chip, uint8_t reg_base) {
 	spi_unlock_dev(chip->spi_dev);
 	return val;
 }
-/*
+*/
+
 static void accel_sensor_write_reg(spi_chip_t * chip, uint8_t reg_base) {
 	if (spi_lock_dev(chip->spi_dev) <0)
 		return;
@@ -77,7 +79,7 @@ static uint16_t accel_sensor_read_reg(spi_chip_t * chip, uint8_t reg_base) {
 	spi_unlock_dev(chip->spi_dev);
 	return val;
 }
-*/
+
 
 /* reference lm70 */
 void accel_sensor_spi_setup_cs(spi_dev_t * spi_dev, spi_chip_t * spi_chip, uint8_t cs) {
