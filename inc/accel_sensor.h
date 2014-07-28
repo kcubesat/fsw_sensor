@@ -1,3 +1,9 @@
+/*
+ * accel_sensor.h
+ * LIS3LV02DQ_SPI
+ * Created on : July 20, 2014
+ *     Author : Kim sung keun
+*/
 #ifndef ACCEL_SENSOR_H_
 #define ACCEL_SENSOR_H_
 #include <stdint.h>

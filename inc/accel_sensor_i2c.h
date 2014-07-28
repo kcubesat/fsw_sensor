@@ -1,0 +1,17 @@
+/*
+ * accel_sensor_i2c.h
+ *
+ *  Created on: July 23, 2014
+ *      Author: Kim sung keun
+ */
+
+
+#include <command/command.h>
+
+typedef struct accel_sensor_data_s {
+        float x;
+        float y;
+        float z;
+} accel_sensor_data_t;
+
+int accel_sensor_i2c_test(struct command_context *ctx);
