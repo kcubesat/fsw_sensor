@@ -1,6 +1,6 @@
 /*
  * accel_sensor_i2c.h
- *
+ * LIS3LV02DQ_I2C
  *  Created on: July 23, 2014
  *      Author: Kim sung keun
  */

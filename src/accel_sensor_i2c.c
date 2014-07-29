@@ -63,12 +63,12 @@ static int is_initialised = pdFALSE;
 //static int defaultmode = MAG_MODE_IDLE;
 //static float scale = 1/1.3;
 
-// Write register "reg" with value "val"
+// Write register"reg" with value "val"
 static int accel_sensor_write_reg(uint8_t reg, uint8_t val) {
   uint8_t txdata[2];
   txdata[0] = reg;
   txdata[1] = val;
-  return i2c_master_transaction(1,0x1D, txdata, 2,NULL,0,2);
+  return i2c_master_transaction(2,0x1D, &txdata, 2,NULL,0,2);
 }
 
 
@@ -76,7 +76,7 @@ static int accel_sensor_write_reg(uint8_t reg, uint8_t val) {
 static int accel_sensor_read_reg(uint8_t reg, uint8_t *val) {
   uint8_t txdata[1];
   txdata[0] = reg;
-  return i2c_master_transaction(1,0x1D, txdata, 1,val,1,2);
+  return i2c_master_transaction(2,0x1D, &txdata, 1,val,1,2);
 }
 
 
@@ -95,11 +95,11 @@ static int accel_sensor_off(void) {
 
 
 // Setup i2c to hmc5843(mag) ??????
- void accel_sensor_init(void) {
+/* void accel_sensor_init(void) {
 
 	if(is_initialised)
 		return;
-	/* Turn-on-time: 200 us */
+//	 Turn-on-time: 200 us 
 	UPIO_ECR = 1;
 	UPIO_MDDR = 0;
 	UPIO_OER = 0x00000001;
@@ -110,15 +110,15 @@ static int accel_sensor_off(void) {
 	UPIO_SODR = 0x00000001;
 	vTaskDelay(configTICK_RATE_HZ * 0.5);
 	
-	/* Setup I2C */
-	i2c_init(1, I2C_MASTER, 0x06, 60, 5, 5, NULL);
+//	 Setup I2C 
+//	i2c_init(0, I2C_MASTER, 0x06, 60, 5, 5, NULL);
 
 	vTaskDelay(configTICK_RATE_HZ * 0.2);
 
 	is_initialised = pdTRUE;
 
 }
-
+*/
 
 
 
@@ -136,8 +136,8 @@ int accel_sensor_read(mag_data_t * data) {
 //	txdata[3] = ACCEL_SENSOR_DATA_ACCEL_Y_OUT_HIGH;
 //	txdata[4] = ACCEL_SENSOR_DATA_ACCEL_Z_OUT_LOW;
 //	txdata[5] = ACCEL_SENSOR_DATA_ACCEL_Z_OUT_HIGH;
-	retval1 = i2c_master_transaction(1,0x1D, txdata[0], 1,rxdata[0],1,2);
-	retval2 = i2c_master_transaction(1,0x1D, txdata[1], 1,rxdata[1],1,2);
+	retval1 = i2c_master_transaction(0,0x1D, &txdata[0], 1, &rxdata[0],1,2);
+	retval2 = i2c_master_transaction(0,0x1D, &txdata[1], 1, &rxdata[1],1,2);
 //	retval3 = i2c_master_transaction(1,0x1D, txdata[2], 1,rxdata[2],1,2);
 //	retval4 = i2c_master_transaction(1,0x1D, txdata[3], 1,rxdata[3],1,2);	
 //	retval5 = i2c_master_transaction(1,0x1D, txdata[4], 1,rxdata[4],1,2);
@@ -161,19 +161,36 @@ int accel_sensor_read(mag_data_t * data) {
 
 // Do loop measurements
 int accel_sensor_i2c_test(struct command_context *ctx) {
-	accel_sensor_init();
+//	accel_sensor_init();
         accel_sensor_data_t data;
 	uint8_t WHO_AM_I;	
-	accel_sensor_read_reg(ACCEL_SENSOR_CTRL_WHO_AM_I, &WHO_AM_I);
+	
+        uint8_t txstatus[2];
+	uint8_t rxstatus[2];
+	uint8_t txpoweron[2];
+	uint8_t txpoweroff[2];
+	txstatus[0] = ACCEL_SENSOR_CTRL_WHO_AM_I;
+	txstatus[1] = ACCEL_SENSOR_CTRL_REG1;
+	txpoweron[0] = ACCEL_SENSOR_CTRL_REG1;
+	txpoweron[1] = 0x87;
+	txpoweroff[0] = ACCEL_SENSOR_CTRL_REG1;
+	txpoweroff[1] = 0x07;	
+
+	i2c_master_transaction(0,0x1D, &txstatus[0], 1, &rxstatus[0],1,2);
+	i2c_master_transaction(0,0x1D, &txpoweron, 2, NULL,0,2);
+	
+//	i2c_master_transaction(2,0x1D, &txdata, 2,NULL,0,2);
+//	accel_sensor_write_reg(ACCEL_SENSOR_CTRL_WHO_AM_I, &WHO_AM_I);
 
 	uint8_t val;	
 	val=accel_sensor_on();
-	printf ("who am i : %x\n\r", WHO_AM_I);
+	printf ("who am i : %x\n\r", rxstatus[0]);
 	printf ("device on : %x\n\r", val);
 	
         while (1) {
 
                 if (usart_messages_waiting(USART_CONSOLE) != 0)
+//			i2c_master_transaction(2,0x1D, 0x2007, 2,NULL,0,2);		
                         break;
 
 //		printf ("y: %x\n\r", accel_sensor_read(&data));
