@@ -182,10 +182,10 @@ int accel_sensor_i2c_test(struct command_context *ctx) {
 //	i2c_master_transaction(2,0x1D, &txdata, 2,NULL,0,2);
 //	accel_sensor_write_reg(ACCEL_SENSOR_CTRL_WHO_AM_I, &WHO_AM_I);
 
-	uint8_t val;	
-	val=accel_sensor_on();
-	printf ("who am i : %x\n\r", rxstatus[0]);
-	printf ("device on : %x\n\r", val);
+//	uint8_t val;	
+//	val=accel_sensor_on();
+	printf ("who am i : %x\n\r", rxstatus[1]);
+//	printf ("device on : %x\n\r", val);
 	
         while (1) {
 
@@ -197,13 +197,11 @@ int accel_sensor_i2c_test(struct command_context *ctx) {
 
                 if (accel_sensor_read(&data) == E_NO_ERR) {
                         console_clear();
-                        printf("X: %4.1f mG\n\r", data.x);
-//			printf ("who am i : %x\n\r", WHO_AM_I);
-//			printf ("device on : %x\n\r", val);
+                        printf("X: %4.1f G\n\r", data.x);
                 }
 
                 vTaskDelay(configTICK_RATE_HZ * 0.100);
         }
-	accel_sensor_off();
+//	accel_sensor_off();
         return CMD_ERROR_NONE;
 }
