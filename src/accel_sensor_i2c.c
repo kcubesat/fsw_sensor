@@ -157,6 +157,7 @@ int accel_sensor_read(mag_data_t * data) {
         } else {
                 return E_TIMEOUT;
         }
+return retval2;
 }
 
 // Do loop measurements
