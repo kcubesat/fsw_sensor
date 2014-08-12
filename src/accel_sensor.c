@@ -19,12 +19,6 @@
 
 #define ACCEL_SENSOR_CTRL_WHO_AM_I		0x0F
 #define ACCEL_SENSOR_CTRL_REG1			0x20	//Power on device, enable all axis, and turn off self test
-/*
-#define ACCEL_SENSOR_CTRL_
-#define ACCEL_SENSOR_CTRL_
-#define ACCEL_SENSOR_CTRL_
-#define ACCEL_SENSOR_CTRL_
-*/
 
 #define ACCEL_SENSOR_DATA_ACCEL_X_OUT_LOW	0x28
 #define ACCEL_SENSOR_DATA_ACCEL_Y_OUT_LOW	0x2A
@@ -96,16 +90,11 @@ void accel_sensor_spi_setup(spi_chip_t * chip) {
 }
 
 float accel_sensor_read_accel(spi_chip_t * chip) {
-//	if (spi_lock_dev(chip->spi_dev) < 0)
-//		return 0;
-	x_val_t * x_val; //, y_val, z_val;
-//	int8_t val[1] = {accel_sensor_read_reg(chip, ACCEL_SENSOR_DATA_ACCEL_X_OUT_LOW), accel_sensor_read_reg(chip, ACCEL_SENSOR_DATA_ACCEL_X_OUT_HIGH)};
-
+	x_val_t * x_val;
+ 
 	x_val->low = accel_sensor_read_reg(chip, ACCEL_SENSOR_DATA_ACCEL_X_OUT_LOW); // low out x 
 	x_val->high = accel_sensor_read_reg(chip, ACCEL_SENSOR_DATA_ACCEL_X_OUT_HIGH); // low out x 
 	printf("x=%d\r\n",x_val);	
-//	int16_t y_val = accel_sensor_read_reg(chip, ACCEL_SENSOR_DATA_ACCEL_Y_OUT_LOW); // low out y
-//	int16_t z_val = accel_sensor_read_reg(chip, ACCEL_SENSOR_DATA_ACCEL_Z_OUT_LOW); // low out z
-	return 0; //, y_val, z_val;
+	return 0;
 }
 

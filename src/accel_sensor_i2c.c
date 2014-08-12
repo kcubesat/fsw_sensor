@@ -55,13 +55,7 @@ typedef struct accel_sensor_reg_data_s {
 	uint8_t status;
 } accel_sensor_reg_data_t;
 
-// default values 
 static int is_initialised = pdFALSE;
-//static int meas = MAG_MEAS_NORM;
-//static int gain = MAG_GAIN_1_0;
-//static int rate = MAG_RATE_10;
-//static int defaultmode = MAG_MODE_IDLE;
-//static float scale = 1/1.3;
 
 // Write register"reg" with value "val"
 static int accel_sensor_write_reg(uint8_t reg, uint8_t val) {
@@ -71,14 +65,12 @@ static int accel_sensor_write_reg(uint8_t reg, uint8_t val) {
   return i2c_master_transaction(2,0x1D, &txdata, 2,NULL,0,2);
 }
 
-
 // Read register "reg" with value "val"
 static int accel_sensor_read_reg(uint8_t reg, uint8_t *val) {
   uint8_t txdata[1];
   txdata[0] = reg;
   return i2c_master_transaction(2,0x1D, &txdata, 1,val,1,2);
 }
-
 
 static int accel_sensor_on(void) {
 	uint8_t val;
@@ -91,8 +83,6 @@ static int accel_sensor_off(void) {
 	val=accel_sensor_write_reg(0x20, 0x07); // device off
 	return val;
 }
-
-
 
 // Setup i2c to hmc5843(mag) ??????
 /* void accel_sensor_init(void) {
@@ -116,11 +106,8 @@ static int accel_sensor_off(void) {
 	vTaskDelay(configTICK_RATE_HZ * 0.2);
 
 	is_initialised = pdTRUE;
-
 }
 */
-
-
 
 // Perform read of data-registers from hmc5843
 int accel_sensor_read(mag_data_t * data) {
@@ -132,27 +119,14 @@ int accel_sensor_read(mag_data_t * data) {
 
         txdata[0] = ACCEL_SENSOR_DATA_ACCEL_X_OUT_LOW;
 	txdata[1] = ACCEL_SENSOR_DATA_ACCEL_X_OUT_HIGH;
-//	txdata[2] = ACCEL_SENSOR_DATA_ACCEL_Y_OUT_LOW;
-//	txdata[3] = ACCEL_SENSOR_DATA_ACCEL_Y_OUT_HIGH;
-//	txdata[4] = ACCEL_SENSOR_DATA_ACCEL_Z_OUT_LOW;
-//	txdata[5] = ACCEL_SENSOR_DATA_ACCEL_Z_OUT_HIGH;
+
 	retval1 = i2c_master_transaction(0,0x1D, &txdata[0], 1, &rxdata[0],1,2);
 	retval2 = i2c_master_transaction(0,0x1D, &txdata[1], 1, &rxdata[1],1,2);
-//	retval3 = i2c_master_transaction(1,0x1D, txdata[2], 1,rxdata[2],1,2);
-//	retval4 = i2c_master_transaction(1,0x1D, txdata[3], 1,rxdata[3],1,2);	
-//	retval5 = i2c_master_transaction(1,0x1D, txdata[4], 1,rxdata[4],1,2);
-//	retval6 = i2c_master_transaction(1,0x1D, txdata[5], 1,rxdata[5],1,2);
-        if (retval1 == E_NO_ERR) {
-
-                // Data is returned in a slave-frame structure 
+        
+	if (retval1 == E_NO_ERR) {
                 tmpx = rxdata[0] << 8 | rxdata[1];
-//                tmpy = rxdata[2] << 8 | rxdata[3];
-//                tmpz = rxdata[4] << 8 | rxdata[5];
 
 		data->x = (float) tmpx ;
-//                data->y = (float) tmpy * 1/1024;
-//                data->z = (float) tmpz * 1/1024;
-
                 return E_NO_ERR;
         } else {
                 return E_TIMEOUT;
@@ -191,16 +165,12 @@ int accel_sensor_i2c_test(struct command_context *ctx) {
         while (1) {
 
                 if (usart_messages_waiting(USART_CONSOLE) != 0)
-//			i2c_master_transaction(2,0x1D, 0x2007, 2,NULL,0,2);		
                         break;
-
 //		printf ("y: %x\n\r", accel_sensor_read(&data));
-
                 if (accel_sensor_read(&data) == E_NO_ERR) {
                         console_clear();
                         printf("X: %4.1f G\n\r", data.x);
                 }
-
                 vTaskDelay(configTICK_RATE_HZ * 0.100);
         }
 //	accel_sensor_off();
