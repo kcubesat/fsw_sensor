@@ -30,29 +30,65 @@ char   _SNAPSHOT[6] =     {0xAA,0x05,0x00,0x00,0x00,0x00};
 char   _GET_PICTURE[6]=   {0xAA,0x04,0x01,0x00,0x00,0x00};
 char   _PACKET_ACK[6] =   {0xAA,0x0E,0x00,0x00,0x00,0x00};
 
-	char sync;
-	char c=0xCC;
+	char recv_msg[10];
 /* camera_test  */
-int camera_usart_test(struct command_context *ctx) {
+int camera_usart_test(struct command_context *ctx)
+{
+	char * args = command_args(ctx);
+	int testmode;
+/* testmode 1 : puttest */
+/* testmode 2 : gettest */
+/* testmode 3 : normal */
+	if (sscanf(args, "%u", &testmode) != 1)          return 0;
 
-//	char sync=0xAB;
-	printf ("start sync : %x\n\r", sync);
+	int i = 0;
+	int iter_cnt = 60;
+	int cmd_len = 6;
+
+	usart_init(1, cpu_core_clk, CAMERA_BAUD);	// use USART1
+	printf ("init sync : baud = %d\n", CAMERA_BAUD);
+
+	if (testmode == 1)
+	{
+		
+		for ( i = 0 ; i < 3; i++ )
+			usart_putstr(1, _SYNC_COMMAND, 6);
+
+		printf ("putstr sync : command = ");
+		for( i = 0; i < cmd_len; i++)
+			printf ("%x ", _SYNC_COMMAND[i]);
+		printf ("\n");
+
+	} else if(testmode == 2) 
+	{
+		printf ("getc sync : recv = ", recv_msg);
+		for ( i = 0 ; i < 12; i++ )
+		{
+			recv_msg[i] = usart_getc(1);
+			printf ("%x ", recv_msg[i]);
+		}
+		printf ("\n");
+	} else 
+	{
+		for ( i = 0 ; i < 3; i++ )
+		{
+			usart_putstr(1, _SYNC_COMMAND, 6);
+			vTaskDelay(configTICK_RATE_HZ * 0.2);
+		}
+
+		printf ("putstr sync : command = ");
+		for( i = 0; i < cmd_len; i++)
+			printf ("%x ", _SYNC_COMMAND[i]);
+		printf ("\n");
+
+		printf ("getc sync : recv = ", recv_msg);
+		for ( i = 0 ; i < 12; i++ )
+		{
+			recv_msg[i] = usart_getc(1);
+			printf ("%x ", recv_msg[i]);
+		}
+		printf ("\n");
+	}
 	
-	usart_init(1, cpu_core_clk, CAMERA_BAUD);	// use USART1 / add main.c or here? OK
-	printf ("init sync : %x\n\r", sync);
-
-//	usart_putc(1, _SYNC_COMMAND[1]);
-//	printf ("putc sync : %x\n\r", sync);
-
-//	usart_insert(1, _SYNC_COMMAND[1], pxTaskWoken);
-//	printf ("insert sync : %x\n\r", sync);
-
-
-	usart_putstr(1, _SYNC_COMMAND, 6);
-	printf ("putstr sync : %x\n\r", sync);
-	
-//	sync = usart_getc(1);
-//	printf ("getc sync : %x\n\r", sync);
-
 	return 0;
 }	
