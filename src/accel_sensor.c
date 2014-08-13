@@ -82,11 +82,6 @@ void accel_sensor_spi_setup(spi_chip_t * chip) {
 	val2 = accel_sensor_read_reg(chip, 0x30);
 	printf("WHO_AM_I : %d\r\n", val);
 	printf("CTRL_REG1 : %d\r\n", val2);
-	printf("who_am_i : %d\r\n", 0x0087);
-	printf("who_am_i2 : %d\r\n", 0x87);
-	printf("who_am_i3 : %o\r\n", 0x0087);
-	printf("who_am_i4 : %o\r\n", 0x87);
-
 }
 
 float accel_sensor_read_accel(spi_chip_t * chip) {
@@ -98,3 +93,8 @@ float accel_sensor_read_accel(spi_chip_t * chip) {
 	return 0;
 }
 
+void accel_sensor_spi_test (struct command_context *ctx) {
+	
+	spi_write(chip, COMMAND);
+	val=spi_read(chip);
+}
