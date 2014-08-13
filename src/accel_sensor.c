@@ -92,9 +92,10 @@ float accel_sensor_read_accel(spi_chip_t * chip) {
 	printf("x=%d\r\n",x_val);	
 	return 0;
 }
-
+/*
 void accel_sensor_spi_test (struct command_context *ctx) {
 	
 	spi_write(chip, COMMAND);
 	val=spi_read(chip);
 }
+*/
