@@ -30,38 +30,42 @@ char   _SNAPSHOT[6] =     {0xAA,0x05,0x00,0x00,0x00,0x00};
 char   _GET_PICTURE[6]=   {0xAA,0x04,0x01,0x00,0x00,0x00};
 char   _PACKET_ACK[6] =   {0xAA,0x0E,0x00,0x00,0x00,0x00};
 
-	char recv_msg[10];
+/* camera_init  */
+int camera_usart_init(struct command_context *ctx)
+{
+	usart_init(1, cpu_core_clk, CAMERA_BAUD);	// use USART1
+	printf ("init : baudrate = %d\n", CAMERA_BAUD);
+return 0;
+}
+
 /* camera_test  */
 int camera_usart_test(struct command_context *ctx)
 {
 	char * args = command_args(ctx);
 	int testmode;
-/* testmode 1 : puttest */
-/* testmode 2 : gettest */
+/* testmode 1 : put test */
+/* testmode 2 : get test */
 /* testmode 3 : normal */
 	if (sscanf(args, "%u", &testmode) != 1)          return 0;
 
 	int i = 0;
 	int iter_cnt = 60;
 	int cmd_len = 6;
-
-	usart_init(1, cpu_core_clk, CAMERA_BAUD);	// use USART1
-	printf ("init sync : baud = %d\n", CAMERA_BAUD);
+	char recv_msg[11];
 
 	if (testmode == 1)
 	{
-		
 		for ( i = 0 ; i < 3; i++ )
 			usart_putstr(1, _SYNC_COMMAND, 6);
 
-		printf ("putstr sync : command = ");
+		printf ("putstr test : command = ");
 		for( i = 0; i < cmd_len; i++)
 			printf ("%x ", _SYNC_COMMAND[i]);
 		printf ("\n");
 
 	} else if(testmode == 2) 
 	{
-		printf ("getc sync : recv = ", recv_msg);
+		printf ("getc test : recv = ", recv_msg);
 		for ( i = 0 ; i < 12; i++ )
 		{
 			recv_msg[i] = usart_getc(1);
@@ -70,25 +74,73 @@ int camera_usart_test(struct command_context *ctx)
 		printf ("\n");
 	} else 
 	{
-		for ( i = 0 ; i < 3; i++ )
+		for ( i = 0 ; i < 2; i++ )
 		{
 			usart_putstr(1, _SYNC_COMMAND, 6);
-			vTaskDelay(configTICK_RATE_HZ * 0.2);
 		}
-
 		printf ("putstr sync : command = ");
 		for( i = 0; i < cmd_len; i++)
 			printf ("%x ", _SYNC_COMMAND[i]);
 		printf ("\n");
-
+//		vTaskDelay(configTICK_RATE_HZ * 0.2);
 		printf ("getc sync : recv = ", recv_msg);
 		for ( i = 0 ; i < 12; i++ )
-		{
+		{	
 			recv_msg[i] = usart_getc(1);
 			printf ("%x ", recv_msg[i]);
 		}
-		printf ("\n");
+			printf ("\n");
 	}
-	
-	return 0;
-}	
+}
+
+
+int camera_usart_picture(struct command_context *ctx)
+{
+	char * args = command_args(ctx);
+	int testmode;
+/* picturemode 1 :  */
+/* picturemode 2 :  */
+/* picturemode 3 :  */
+	if (sscanf(args, "%u", &testmode) != 1)          return 0;
+
+	int i = 0;
+	int cmd_len = 6;
+	char recv_msg[11];
+	unsigned char ack_counter;
+
+	if (testmode == 1)
+	{
+		for ( i = 0 ; i < 2; i++ )
+		{
+			usart_putstr(1, _SYNC_COMMAND, 6);
+		}
+		printf ("putstr sync : command = ");
+		for( i = 0; i < cmd_len; i++)
+			printf ("%x ", _SYNC_COMMAND[i]);
+		printf ("\n");
+//		vTaskDelay(configTICK_RATE_HZ * 0.2);
+		printf ("getc sync : recv = ", recv_msg);
+		for ( i = 0 ; i < 12; i++ )
+		{	
+			recv_msg[i] = usart_getc(1);
+			printf ("%x ", recv_msg[i]);
+		}
+			printf ("\n");
+			if (recv_msg[0] == 0xAA && recv_msg[1] == 0x0E &&
+			recv_msg[2] == 0x0D && recv_msg[4] == 0x00 &&
+			recv_msg[5] == 0x00) 
+			{
+                                ack_counter = recv_msg[3];
+//				read(fd, recv_msg, 6);
+				if (recv_msg[6] == 0xAA && recv_msg[7] == 0x0D &&
+                                    recv_msg[8] == 0x00 && recv_msg[9] == 0x00 &&
+                                    recv_msg[10] == 0x00 && recv_msg[11] == 0x00) {
+                                        ack_received = 1;
+                                        break;
+                                }
+                        }
+                        // printf("\n");
+                }
+
+	}
+}
