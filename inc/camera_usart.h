@@ -11,5 +11,6 @@
 
 int camera_usart_init(struct command_context *ctx);
 int camera_usart_test(struct command_context *ctx);
-
+int camera_usart_sync(struct command_context *ctx);
+int camera_picture_get(struct command_context *ctx);
 #endif /* CAMERA_USART_H_ */
