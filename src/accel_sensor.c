@@ -2,7 +2,7 @@
  * accel_sensor.c
  * LIS3LV02DQ_SPI
  * Created on : July 20, 2014
- *     Author : Kim sung keun
+ *     Author : Han sang hyuk, Kim sung keun
 */
 #include <inttypes.h>
 #include <stdio.h>

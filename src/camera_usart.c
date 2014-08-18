@@ -2,7 +2,7 @@
  * camera_usart.c
  * LinkSprite JPEG camera or uCAM2
  * Created on : Aug 7, 2014
- * Author : kim sung keun
+ * Author : han sang hyuk , kim sung keun
  */
 
 #include <stdio.h>

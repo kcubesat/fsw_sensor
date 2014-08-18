@@ -2,7 +2,7 @@
  * accel_sensor_i2c.c
  * LIS3LV02DQ_I2C
  * Created on : July 23, 2014
- *     Author : Kim sung keun
+ *     Author : Han sang hyuk, Kim sung keun
  */
 
 #include <math.h>
