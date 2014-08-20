@@ -41,4 +41,7 @@ float accel_sensor_read_accel(spi_chip_t * chip);
  */
 int16_t accel_sensor_read_raw(spi_chip_t * chip);
 
+int cmd_accel_sensor_init(struct command_context *ctx);
+int cmd_accel_sensor_test(struct command_context *ctx);
+
 #endif /* ACCEL_SENSOR_H_ */

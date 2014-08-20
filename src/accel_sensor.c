@@ -15,6 +15,8 @@
 #include <freertos/task.h>
 #include <freertos/queue.h>
 
+#include<command/command.h>
+
 #include <accel_sensor.h>
 
 #define ACCEL_SENSOR_CTRL_WHO_AM_I		0x0F
@@ -96,6 +98,33 @@ float accel_sensor_read_accel(spi_chip_t * chip) {
 void accel_sensor_spi_test (struct command_context *ctx) {
 	
 	spi_write(chip, COMMAND);
+}
 	val=spi_read(chip);
 }
 */
+
+/* cmd_test */
+extern spi_dev_t spi_dev;
+static spi_chip_t accel_sensor_chip;
+static int accel_sensor_map = 7;
+
+int cmd_accel_sensor_init(struct command_context *ctx) {
+        extern spi_dev_t spi_dev;
+        accel_sensor_spi_setup_cs(&spi_dev, &accel_sensor_chip, accel_sensor_map);
+        accel_sensor_spi_setup(&accel_sensor_chip);
+        return CMD_ERROR_NONE;
+}
+
+int cmd_accel_sensor_test(struct command_context *ctx) {
+
+        while(1) {
+                if (usart_messages_waiting(USART_CONSOLE) != 0)
+                        break;
+
+                accel_sensor_read_accel(&accel_sensor_chip);
+//              printf("X: %4.1f m/s^2\n\r", data.x);
+                vTaskDelay(100);
+        }
+
+        return 0;
+}

@@ -124,7 +124,6 @@ int camera_usart_sync(struct command_context *ctx)
 		{
 			ack_counter = recv_msg[3];
 			usart_putstr(1, _ACK_COMMAND, 6);
-//			read(fd, recv_msg, 6);
 			if (recv_msg[6] == 0xAA && recv_msg[7] == 0x0D &&
                       	recv_msg[8] == 0x00 && recv_msg[9] == 0x00 &&
                       	recv_msg[10] == 0x00 && recv_msg[11] == 0x00) 
@@ -133,11 +132,12 @@ int camera_usart_sync(struct command_context *ctx)
                               	break;
                       	}
               	}
-	}
+	} return 0;
 }
 
 /* camera_picture_get 
 	camera_setting and snapshot and get */
+char recv_pic[4803];
 
 int camera_picture_get(struct command_context *ctx)
 {
@@ -146,7 +146,7 @@ int camera_picture_get(struct command_context *ctx)
 	int cmd_len = 6;
 	char recv_ack[6];
 	char recv_msg[6];
-	char recv_pic[4803];		// is ok queue size ?? need check
+//	char recv_pic[4803];		// is ok queue size ?? need check
 					// picture data ID 'AA 0A 01' +3byte
 
 	/* initial  */
@@ -197,12 +197,37 @@ int camera_picture_get(struct command_context *ctx)
 		printf ("%x ", recv_msg[i]);
 	}
 	printf ("\n");
-	
+
+	/* save picture */	
 	printf ("ing = ", recv_msg);
-	for ( i = 0 ; i < 4803; i++ )
+	FILE*file=fopen("/sd/picture.txt", 'w');	// file open
+	for ( i = 0 ; i < 100; i++ )			// size 4800 need change rxqueue size
 	{	
-		recv_pic[i] = usart_getc(1);
-		printf (".");
+		printf ("%x", usart_getc(1));//file write
+//		recv_pic[i] = usart_getc(1);
+//		printf (".");
 	}
+	
+	int close = fclose(file);			// file close
+	return 0; 
 }
 
+/* just test */
+int camera_picture_save(struct command_context *ctx)
+{
+	int a;
+	fopen("/sd/picture.txt", 'w');	// file open
+	fprintf("%d",1);
+
+	write_picture(&recv_pic);
+	a = sd_disk_status();
+	return 0;
+}
+
+void write_picture(char *recv_pic)
+{
+//	FILE*file=fopen("/sd/picture.txt", 'w');	// file open
+	FILE*file=fopen("/sd/picture.txt",'a');		// file open add
+	fprintf("%d", recv_pic);			// write
+	int close = fclose(file);			// file close
+}
