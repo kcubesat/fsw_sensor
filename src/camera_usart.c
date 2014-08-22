@@ -8,16 +8,16 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 #include <freertos/task.h>
 #include <freertos/queue.h>
 
-
 #include <dev/arm/at91sam7.h>
 #include <dev/arm/cpu_pm.h>		//extern cpu_core_clk for use
-
 
 #define CAMERA_BAUD		57600	//uCAM2 : 57600, LinkSprite : 38400
 
@@ -199,16 +199,20 @@ int camera_picture_get(struct command_context *ctx)
 	printf ("\n");
 
 	/* save picture */	
-	printf ("ing = ", recv_msg);
-	FILE*file=fopen("/sd/picture.txt", 'w');	// file open
+	printf ("ing", recv_msg);
+	int fd;		
+	fd = open("/sd/picture1.txt", O_CREAT | O_TRUNC | O_RDWR);		// file open add
+	if (fd <0) {
+		printf("Failed to open \n");
+		return 0;
+	}	
 	for ( i = 0 ; i < 100; i++ )			// size 4800 need change rxqueue size
 	{	
-		printf ("%x", usart_getc(1));//file write
-//		recv_pic[i] = usart_getc(1);
+		recv_pic[i] = usart_getc(1);
 //		printf (".");
 	}
-	
-	int close = fclose(file);			// file close
+	write(fd, recv_pic, 100);
+	close(fd);			// file close
 	return 0; 
 }
 
@@ -216,8 +220,6 @@ int camera_picture_get(struct command_context *ctx)
 int camera_picture_save(struct command_context *ctx)
 {
 	int a;
-	fopen("/sd/picture.txt", 'w');	// file open
-	fprintf("%d",1);
 
 	write_picture(&recv_pic);
 	a = sd_disk_status();
@@ -226,8 +228,13 @@ int camera_picture_save(struct command_context *ctx)
 
 void write_picture(char *recv_pic)
 {
-//	FILE*file=fopen("/sd/picture.txt", 'w');	// file open
-	FILE*file=fopen("/sd/picture.txt",'a');		// file open add
-	fprintf("%d", recv_pic);			// write
-	int close = fclose(file);			// file close
+	int fd; 
+
+	fd = open("/sd/picture.txt", O_CREAT | O_TRUNC | O_RDWR);		// file open
+	if (fd <0) {
+		printf("Failed to open \n");
+		return 0;	
+	}	
+	write(fd, &recv_pic, 100);	//write
+	close(fd);			// file close
 }
